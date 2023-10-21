@@ -1,11 +1,13 @@
 html, body {
     width: 100%;
+    background-color: silver;
 }
 
 aside {
     background-color: lavender;
     border: solid black 3px;
     float:left;
+    padding: 10px;
     margin:15px;
 }
 
@@ -79,5 +81,6 @@ input[value=')'],input[value='('],input[value='C'] {
     }
     aside {
         float:none;
+        margin: 10px auto;
     }
 }
