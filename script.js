@@ -1,6 +1,6 @@
 buttons = document.getElementsByTagName('input'); // adds all input tags into an object
 display = document.getElementById('display'); // captures calculator screen
-let approvedInput = ['Backspace', 'Enter','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'];
+let approvedInput = ['Backspace','Enter','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'];
 let statement = ''; // any changes to statement will reflect on the display
 
 // adds event listeners
@@ -13,6 +13,8 @@ const addEventListener = () => {
                     statement = display.value;
                     statement = String(statement).replace(e.data,''); // deletes unapproved input
                     display.value = statement;
+                } else {
+                    statement = display.value;
                 };
             });
         } else {
@@ -30,7 +32,7 @@ const addEventListener = () => {
 // adds operands and operators to screen
 const operators = ['+','-','/','*','**','*0.01'];
 const constructExpression = value => {
-    value === '^' ? value = '**' : value === '%' ? value = '*0.01' : null; // switches symbols to operable operators 
+    value === '^' ? value = '**' : value === '%' ? value = '*0.01' : null; // switches symbols to appropriate operators 
     if (operators.includes(statement[statement.length-1]) && operators.includes(value)) {
         statement = statement.replace(statement[statement.length-1],value); // prevents double operators
     } else {statement += value}; // adds numbers/operators to the screen
@@ -39,19 +41,25 @@ const constructExpression = value => {
 // performs operations in the memory
 let memory = 0;
 const constructMemory = value => {
-    if (value === 'M+') {memory += Number(eval(statement))}; // adds to memory
-    if (value === 'M-') {memory -= Number(eval(statement))}; // subtracts from memory
+    if (value === 'M+') {memory += Number(math(statement))}; // adds to memory
+    if (value === 'M-') {memory -= Number(math(statement))}; // subtracts from memory
     if (value === 'MC') {memory = 0}; // resets memory
     if (value === 'MR') {statement = memory}; // display memory on screen
 }
 
 // goes up or down history log if up or down arrow pressed
 let history = [];
-const navigateHistory = value => { // goes up or down if not at the ends of the array
+const navigateHistory = value => {
     if ((value === 'ArrowUp' || value === '⬆') && historyIndex != 0) {historyIndex--};
     if ((value === 'ArrowDown' || value === '⬇') && historyIndex != history.length-1) {historyIndex++};
     statement = history[historyIndex];
 };
+
+// converts string numbers and string operators into actual numbers/operators w/ function constructor
+const math = value => {
+    const solution = Function(`return ${value}`)();
+    return solution;
+}
 
 // evaluates the current expression
 const evaluate = () => {
@@ -60,7 +68,7 @@ const evaluate = () => {
     } else try {
         history.push(statement);
         historyIndex = history.length-1;
-        statement = eval(statement); // built-in js function, converts strings into actual numbers/operators 
+        statement = math(statement);
     } catch(err) { // error if unevaluable
         statement = 'ERROR: INVALID SYNTAX';
     }
